@@ -1,0 +1,33 @@
+- In SDP we have to show graphs in presentation and in our in thesis 
+- Due to confidentiality of data we can show only feature names in presentation and thesis  
+- In weekly report we have to mantion the progress that we did in early weeks that we discussed this domain with business inteligeince persons and in next part of progress we discuss propblem with  people from Business and Marketing department based on Business  Process Model of their(Business  Process Model is yearly business plan of department)
+-Weekly report abstract progress
+----Understand Problem domain
+----Discuss it with Sales and Marketing to get deeper understanding of domain
+----We started to research and read academic paper and books
+----We started to a analysis data --extract features we need 
+----We started to preprosessing part
+----We started to implementation algorithms
+
+--------------------------------------
+datani check etdik ve bize lazim olan rfm methodu ucun featuresleri extract eledik, 46086 datamiz var, transaction, wspecific region secdik Yasamal, featrues:
+ad, soyad, transaction id unique, amount, operaton date.
+
+
+
+Arzu: research aparib ve weekly reportlari yazmaqa basliyib, notes, thesisi basliyib yazmaqa,
+
+basqa insanlarin customer segmentation barede ready solutionlar barede etrafli research apardiq paperler oxuduq, 
+
+preprocessing  - datani preprocess eledik (temizledik), dublicae datas, null datas, 
+
+Apply RFM model, k-means implemented (from scratch), (sklearn librarires used for second algorithm (hierarchical))
+
+we compare our results, for best result we should increase features size, we have discussed with business department, we need more rdata for better results, Our future 
+
+plans, deploying this model tenserflow and , keras ,
+
+Our difficuties, there is no server, supercomputer,  for processing big size datas, limited features that we afvise for quality work.
+
+Graphs,  
+ 
