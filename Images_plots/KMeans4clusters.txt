@@ -1,0 +1,7 @@
+dbscan is the best for finding extreme customers because it can determine outliers/noise in the data.
+
+green points indicate best customers
+yellow points indicate the worst and almost lost customers
+black points indicate customers who once was active with spending more frequently but almost lost now
+red points indicate customers who are active now and making transactions more frequently 
+blue points indicate customers who are active now but making less transactions compared to red ones 
