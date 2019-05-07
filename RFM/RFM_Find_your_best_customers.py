@@ -19,7 +19,7 @@ import datetime as dt
 
 
 warnings.filterwarnings('ignore')
-df = pd.read_excel("Online Retail.xlsx")
+df = pd.read_excel("Online_Retail.xlsx")
 df.head()
 df1 = df
 

@@ -283,4 +283,13 @@ for i in range(0,4):
     ax.scatter(normalized_rfm.recency[rfmTable.clusters == i], normalized_rfm.frequency[rfmTable.clusters == i], normalized_rfm.monetary_value[rfmTable.clusters == i], c = colors[i])
     
 
+# In[]:
 
+
+fig = plt.figure(6)
+ax = Axes3D(fig)
+ax.set_xlabel('r_quartile')
+ax.set_ylabel('f_quartile')
+ax.set_zlabel('m_quartile')
+ax.scatter(segmented_rfm['r_quartile'], segmented_rfm['f_quartile'],segmented_rfm['m_quartile'], c ='b' )
+ 
