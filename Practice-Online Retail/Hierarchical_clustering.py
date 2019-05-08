@@ -12,107 +12,108 @@ import warnings
 
 
 warnings.filterwarnings('ignore')
-df = pd.read_excel("Online_Retail.xlsx")
-df.head()
-df1 = df
+d_set = pd.read_excel("Online_Retail.xlsx")
+d_set.head()
+d_set1 = d_set
 
 
 # In[4]:
 
 
-df1
+d_set1
+
 
 
 # In[5]:
 
 
-df1.Country.nunique()
+d_set1.Country.nunique()
 
 
 # In[6]:
 
 
-df1.Country.unique()
+d_set1.Country.unique()
 
 
 # In[7]:
 
 
-df1 = df1.loc[df1['Country'] == 'United Kingdom']
+d_set1 = d_set1.loc[d_set1['Country'] == 'United Kingdom']
 
 
 # In[8]:
 
 
-df1.isnull().sum(axis=0)
+d_set1.isnull().sum(axis=0)
 
 
 # In[9]:
 
 
-df1 = df1[pd.notnull(df1['CustomerID'])]
+d_set1 = d_set1[pd.notnull(d_set1['CustomerID'])]
 
 
 # In[10]:
 
 
-df1.isnull().sum(axis=0)
+d_set1.isnull().sum(axis=0)
 
 
 # In[11]:
 
 
-df1 = df1[pd.notnull(df1['CustomerID'])]
+d_set1 = d_set1[pd.notnull(d_set1['CustomerID'])]
 
 
 # In[12]:
 
 
-df1.Quantity.min()
+d_set1.Quantity.min()
 
 
 # In[13]:
 
 
-def unique_counts(df1):
-   for i in df1.columns:
-       count = df1[i].nunique()
-       print(i, ": ", count)
-unique_counts(df1)
+def unique_counts(d_set1):
+   for i in d_set1.columns:
+       n = d_set1[i].nunique()
+       print(i, ": ", n)
+unique_counts(d_set1)
 
 
 # In[14]:
 
 
-df1['TotalPrice'] = df1['Quantity'] * df1['UnitPrice']
+d_set1['TotalPrice'] = d_set1['Quantity'] * d_set1['UnitPrice']
 
 
 # In[15]:
 
 
-df1['InvoiceDate'].min()
+d_set1['InvoiceDate'].min()
 
 
 # In[16]:
 
 
-df1['InvoiceDate'].max()
+d_set1['InvoiceDate'].max()
 
 
 # In[17]:
 
 
 import datetime as dt
-NOW = dt.datetime(2011,12,10)
-df1['InvoiceDate'] = pd.to_datetime(df1['InvoiceDate'])
+today = dt.datetime(2011,12,10)
+d_set1['InvoiceDate'] = pd.to_datetime(d_set1['InvoiceDate'])
 
 
 # In[18]:
 
 
-rfmTable = df1.groupby('CustomerID').agg({'InvoiceDate': lambda x: (NOW - x.max()).days, 'InvoiceNo': lambda x: len(x), 'TotalPrice': lambda x: x.sum()})
-rfmTable['InvoiceDate'] = rfmTable['InvoiceDate'].astype(int)
-rfmTable.rename(columns={'InvoiceDate': 'recency', 
+RFM_df = d_set1.groupby('CustomerID').agg({'InvoiceDate': lambda x: (today - x.max()).days, 'InvoiceNo': lambda x: len(x), 'TotalPrice': lambda x: x.sum()})
+RFM_df['InvoiceDate'] = RFM_df['InvoiceDate'].astype(int)
+RFM_df.rename(columns={'InvoiceDate': 'recency', 
                          'InvoiceNo': 'frequency', 
                          'TotalPrice': 'monetary_value'}, inplace=True)
 
@@ -120,14 +121,14 @@ rfmTable.rename(columns={'InvoiceDate': 'recency',
 # In[19]:
 
 
-quantiles = rfmTable.quantile(q=[0.25,0.5,0.75])
+quantiles = RFM_df.quantile(q=[0.25,0.5,0.75])
 quantiles = quantiles.to_dict()
 
 
 # In[20]:
 
 
-segmented_rfm = rfmTable
+RFM_seg = RFM_df
 
 
 # In[21]:
@@ -157,66 +158,65 @@ def FMScore(x,p,d):
 # In[22]:
 
 
-segmented_rfm['r_quartile'] = segmented_rfm['recency'].apply(RScore, args=('recency',quantiles,))
-segmented_rfm['f_quartile'] = segmented_rfm['frequency'].apply(FMScore, args=('frequency',quantiles,))
-segmented_rfm['m_quartile'] = segmented_rfm['monetary_value'].apply(FMScore, args=('monetary_value',quantiles,))
+RFM_seg['r_quartile'] = RFM_seg['recency'].apply(RScore, args=('recency',quantiles,))
+RFM_seg['f_quartile'] = RFM_seg['frequency'].apply(FMScore, args=('frequency',quantiles,))
+RFM_seg['m_quartile'] = RFM_seg['monetary_value'].apply(FMScore, args=('monetary_value',quantiles,))
 
 
 # In[23]:
 
 
-segmented_rfm.head()
+RFM_seg.head()
 
 
 # In[24]:
 
 
-segmented_rfm['RFMScore'] = segmented_rfm.r_quartile.map(str) + segmented_rfm.f_quartile.map(str) + segmented_rfm.m_quartile.map(str)
+RFM_seg['RFMScore'] = RFM_seg.r_quartile.map(str) + RFM_seg.f_quartile.map(str) + RFM_seg.m_quartile.map(str)
 
 
 # In[25]:
 
 
-segmented_rfm.head()
+RFM_seg.head()
 
 
 # In[26]:
 
 
-segmented_rfm[segmented_rfm['RFMScore']=='111'].sort_values('monetary_value', ascending=False).head(10)
+RFM_seg[RFM_seg['RFMScore']=='111'].sort_values('monetary_value', ascending=False).head(10)
 
-
-# ## Clustering
+ 
 
 # In[27]:
 
 
 import matplotlib.pyplot as plt
-from sklearn.cluster import KMeans
+# In[40]:
 
+def RFM_n(RFM):
+    return (RFM - RFM.mean())/RFM.std()
 
 # In[28]:
 
 
-normalized_rfm = rfmTable.iloc[:, 0:3]
-normalized_rfm.recency = (normalized_rfm.recency - normalized_rfm.recency.mean())/normalized_rfm.recency.std()
-normalized_rfm.frequency = (normalized_rfm.frequency - normalized_rfm.frequency.mean())/normalized_rfm.frequency.std()
-normalized_rfm.monetary_value = (normalized_rfm.monetary_value - normalized_rfm.monetary_value.mean())/normalized_rfm.monetary_value.std()
-
+RFM_norm= RFM_df.iloc[:, 0:3]
+RFM_norm.recency = RFM_n(RFM_norm.recency)
+RFM_norm.frequency = RFM_n(RFM_norm.frequency)
+RFM_norm.monetary_value = RFM_n(RFM_norm.monetary_value)
 
 # In[29]:
 
 
-normalized_rfm.head(5)
+RFM_norm.head(5)
 
 
 # In[30]:
 
 
-import matplotlib.pyplot as plt
-# Using the dendrogram to find the optimal number of clusters
+# Using the dendrogram helps to find the optimal number of clusters
 import scipy.cluster.hierarchy as sch
-dendrogram = sch.dendrogram(sch.linkage(normalized_rfm, method = 'ward'))
+dendrogram = sch.dendrogram(sch.linkage(RFM_norm, method = 'ward'))
 plt.title('Dendrogram')
 plt.xlabel('Customers')
 plt.ylabel('Euclidean distances')
@@ -229,13 +229,13 @@ plt.show()
 # Fitting Hierarchical Clustering to the dataset
 from sklearn.cluster import AgglomerativeClustering
 hc = AgglomerativeClustering(n_clusters = 3, affinity = 'euclidean', linkage = 'ward')
-y_hc = hc.fit_predict(normalized_rfm)
+y_hc = hc.fit_predict(RFM_norm)
 
 
 # In[35]:
 
 
-rfmTable['clusters'] = y_hc
+RFM_df['clusters'] = y_hc
 
 
 # In[36]:
@@ -250,8 +250,8 @@ ax.set_xlabel('Recency')
 ax.set_ylabel('Frequency')
 ax.set_zlabel('Monetary')
 
-colors = ['blue', 'yellow', 'green', 'red', 'black']
+colors = ['blue', 'red', 'green', 'red', 'black']
 
 for i in range(0,5):
-    ax.scatter(normalized_rfm.recency[y_hc == i], normalized_rfm.frequency[y_hc == i], normalized_rfm.monetary_value[y_hc == i], c = colors[i])
+    ax.scatter(RFM_norm.recency[y_hc == i], RFM_norm.frequency[y_hc == i], RFM_norm.monetary_value[y_hc == i], c = colors[i])
 
